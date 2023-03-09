@@ -24,10 +24,9 @@ router.post("/contacts", async (req, res) => {
       );
     }
 
-    const createContact = dataSource.getRepository(Contacts).create(req.body);
     const results = await dataSource
       .getRepository(Contacts)
-      .save(createContact);
+      .save(req.body);
 
     return res.send(results);
   } catch (error) {
@@ -41,7 +40,7 @@ router.post("/contacts", async (req, res) => {
   }
 });
 
-router.post("/contactUs", async (req, res) => {
+router.post("/contact-us", async (req, res) => {
   try {
     const { name, email, webLink, message } = req.body;
     const contactRequest = await dataSource
@@ -59,12 +58,9 @@ router.post("/contactUs", async (req, res) => {
       throw new Error("Contact Request Already exists");
     }
 
-    const createContactRequest = dataSource
-      .getRepository(ContactUsRequest)
-      .create(req.body);
     const results = await dataSource
       .getRepository(ContactUsRequest)
-      .save(createContactRequest);
+      .save(req.body);
 
     const body = `User with email ${email} and webLink ${webLink} says ${message}`;
 
