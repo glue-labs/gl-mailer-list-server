@@ -1,0 +1,5 @@
+# Following pipeline builds & tests only
+steps:
+  - label: "Build backend"
+    command: |
+      docker build .

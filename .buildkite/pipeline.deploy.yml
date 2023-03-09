@@ -1,0 +1,50 @@
+# Following pipeline builds & deploy to cloudfront/k8s
+steps:
+  - key: 'metadata'
+    label: 'Define build metadata'
+    commands:
+      - printenv
+    plugins:
+      - chronotc/metadata-env#v1.0.0:
+          keys:
+            - DEPLOY
+            - DEPLOY_ENV
+  - key: 'backend'
+    label: 'Build backend'
+    command: |
+        export DOCKER_BUILDKIT=1
+        docker build \
+          --tag $$AWS_ACCOUNT_ID.dkr.ecr.$$AWS_DEFAULT_REGION.amazonaws.com/$$ECR_REPOSITORY:$$BUILDKITE_COMMIT-$$DEPLOY_ENV \
+          --tag $$AWS_ACCOUNT_ID.dkr.ecr.$$AWS_DEFAULT_REGION.amazonaws.com/$$ECR_REPOSITORY:latest \
+          --cache-from $$AWS_ACCOUNT_ID.dkr.ecr.$$AWS_DEFAULT_REGION.amazonaws.com/$$ECR_REPOSITORY:latest \
+          --push .
+    plugins:
+      - chronotc/metadata-env#v1.0.0:
+          keys:
+            - DEPLOY
+            - DEPLOY_ENV
+      - ecr#v2.5.0:
+          login: true
+          no-include-email: true
+          account-ids: $AWS_ACCOUNT_ID
+    env:
+      ECR_REPOSITORY: 'gl-mailer-list-server'
+    depends_on: "metadata"
+    allow_dependency_failure: false
+  - key: 'deploy'
+    label: 'Deploy to kubernetes'
+    concurrency: 1
+    concurrency_group: '$BUILDKITE_BRANCH'
+    commands:
+      - echo $$GLUELABS_KUBE_CONFIG | base64 -d > kubeconfig
+      - chmod go-r kubeconfig
+      - export KUBECONFIG=kubeconfig
+      - echo $$BUILDKITE_COMMIT-$$DEPLOY_ENV
+      - 'helm -n $DEPLOY_ENV upgrade -i --wait gl-mailer-list-server chart/gl-mailer-list-server -f chart/values-$DEPLOY_ENV.yaml --version $$BUILDKITE_COMMIT-$$DEPLOY_ENV --set image.tag=$$BUILDKITE_COMMIT-$$DEPLOY_ENV'
+    plugins:
+      - chronotc/metadata-env#v1.0.0:
+          keys:
+            - DEPLOY
+            - DEPLOY_ENV
+    depends_on: "backend"
+    allow_dependency_failure: false

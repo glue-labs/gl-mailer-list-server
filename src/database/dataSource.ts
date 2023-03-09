@@ -8,18 +8,7 @@ export const dataSource = new DataSource({
   username: applicationConfig.db.username,
   password: applicationConfig.db.password,
   database: applicationConfig.db.name,
-  entities: ["src/entity/*.ts"],
+  entities: ["../entity/*{.ts,.js}"],
   logging: false,
   synchronize: true,
 });
-
-dataSource
-  .initialize()
-  .then(() => {
-    console.log("Data Source has been initialized!");
-  })
-  .catch((err) => {
-    console.error("Error during Data Source initialization:", err);
-  });
-
-

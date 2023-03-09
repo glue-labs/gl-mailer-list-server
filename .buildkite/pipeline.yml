@@ -1,0 +1,70 @@
+# Following pipeline decides if it needs to build only or deploy.
+# After deciding it calls respective pipeline
+steps:
+  - label: 'Implicit build inputs'
+    if: "build.source != 'ui'"
+    command: |
+      if [[ $BUILDKITE_BRANCH == "main" ]]
+      then
+        buildkite-agent meta-data set "DEPLOY" "true"
+        buildkite-agent meta-data set "DEPLOY_ENV" "qa"
+      else
+        buildkite-agent meta-data set "DEPLOY" "false"
+        buildkite-agent meta-data set "DEPLOY_ENV" "null"
+      fi
+  - input: 'Build inputs'
+    key: 'build_inputs_admins'
+    if: "build.source == 'ui' && (build.creator.teams includes 'admins')"
+    fields:
+      - select: 'Deploy'
+        key: 'DEPLOY'
+        options:
+          - label: 'True'
+            value: 'true'
+          - label: 'False'
+            value: 'false'
+        default: 'false'
+      - select: 'ENV'
+        key: 'DEPLOY_ENV'
+        options:
+          - label: 'QA2'
+            value: 'qa2'
+          - label: 'QA'
+            value: 'qa'
+          - label: 'Beta'
+            value: 'beta'
+          - label: 'Base'
+            value: 'base'
+        default: 'qa'
+  - input: 'Build inputs'
+    key: 'build_inputs_qa'
+    if: "build.source == 'ui' && !(build.creator.teams includes 'admins')"
+    fields:
+      - select: 'Deploy'
+        key: 'DEPLOY'
+        options:
+          - label: 'True'
+            value: 'true'
+          - label: 'False'
+            value: 'false'
+        default: 'false'
+      - select: 'ENV'
+        key: 'DEPLOY_ENV'
+        options:
+          - label: 'QA2'
+            value: 'qa2'
+          - label: 'QA'
+            value: 'qa'
+        default: 'qa2'
+  - wait
+  - command: |
+      if [[ $$DEPLOY == "true" ]]; then
+        buildkite-agent pipeline upload .buildkite/pipeline.deploy.yml
+      else
+        buildkite-agent pipeline upload .buildkite/pipeline.build.yml
+      fi
+    plugins:
+      - chronotc/metadata-env#v1.0.0:
+          keys:
+            - DEPLOY
+            - DEPLOY_ENV
