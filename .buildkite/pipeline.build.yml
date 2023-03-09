@@ -2,4 +2,4 @@
 steps:
   - label: "Build backend"
     command: |
-      docker build --platform linux/amd64,linux/arm64 --builder kube .
+      docker build .

@@ -12,10 +12,12 @@ steps:
   - key: 'backend'
     label: 'Build backend'
     command: |
+        export DOCKER_BUILDKIT=1
         docker build \
           --tag $$AWS_ACCOUNT_ID.dkr.ecr.$$AWS_DEFAULT_REGION.amazonaws.com/$$ECR_REPOSITORY:$$BUILDKITE_COMMIT-$$DEPLOY_ENV \
           --tag $$AWS_ACCOUNT_ID.dkr.ecr.$$AWS_DEFAULT_REGION.amazonaws.com/$$ECR_REPOSITORY:latest \
-          --platform linux/amd64,linux/arm64 --push --builder kube .
+          --cache-from $$AWS_ACCOUNT_ID.dkr.ecr.$$AWS_DEFAULT_REGION.amazonaws.com/$$ECR_REPOSITORY:latest \
+          --push .
     plugins:
       - chronotc/metadata-env#v1.0.0:
           keys:
