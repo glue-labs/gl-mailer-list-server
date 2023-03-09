@@ -1,12 +1,18 @@
-import express = require('express');
-import 'dotenv/config';
+import express = require("express");
+import "dotenv/config";
+import routes from "./src/routes/index";
+import { dataSource } from "./src/database/dataSource";
+import bodyParser = require('body-parser');
+import { applicationConfig } from "./config";
 
-const PORT = process.env.PORT || '3000';
+const PORT = applicationConfig.app.port;
 
-const app =express();
+const app = express();
 
-app.get('/test', (req, res) =>{
-    res.json({ok: true});
-});
+app.use(bodyParser.json())
 
-app.listen(PORT, () => console.log(`Server is listening on port ${PORT}`));
+app.use("/", routes);
+
+app.listen(PORT, () =>
+  console.log(`Server is listening on port http://localhost:${PORT}`)
+);
