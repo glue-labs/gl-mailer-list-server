@@ -5,12 +5,16 @@ import "dotenv/config";
 import routes from "./src/routes/index";
 import { applicationConfig } from "./config";
 import { dataSource } from "./src/database/dataSource";
+import { apiRateLimiter } from "./src/utils/rate-limiter";
+
 
 const PORT = applicationConfig.app.port;
 
 const app = express();
 
 app.use(express.json())
+
+app.use(apiRateLimiter);
 
 app.get("/", (req: Request, res: Response) => {
   return res.send('Hi! Server is up.')

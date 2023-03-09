@@ -19,5 +19,10 @@ export const applicationConfig = {
     region: process.env.AWS_REGION,
     senderEmail: process.env.AWS_SENDER_EMAIL,
     recieverEmail: process.env.AWS_RECIEVER_EMAIL,
+  },
+
+  rateLimit: {
+    windowSizeMs: process.env.WINDOW_SIZE,
+    requestLimit: process.env.REQUEST_LIMIT,
   }
 };
