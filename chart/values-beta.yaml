@@ -92,7 +92,7 @@ affinity: {}
 app:
   env: beta
 db:
-  name: gl_lead_beta
+  name: gl_mailer_list_beta
 email:
   sender: hello@glue.is
   receiver: info@gluelabs.com

@@ -92,7 +92,7 @@ affinity: {}
 app:
   env: main
 db:
-  name: gl_lead
+  name: gl_mailer_list
 email:
   sender: hello@glue.is
   receiver: info@gluelabs.com
