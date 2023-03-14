@@ -4,11 +4,12 @@ import { dataSource } from "../database/dataSource";
 import { Contacts } from "../entity/Contacts.entity";
 import { ContactUsRequest } from "../entity/ContactUsRequest.entity";
 import { AwsSesService } from "../services/aws_ses.service";
+import { contactsSchemaValidator, contactUsSchemaValidator } from "../validations/JoiValidations"
 const router = express.Router();
 
 const awsService = new AwsSesService();
 
-router.post("/contacts", async (req, res) => {
+router.post("/contacts", contactsSchemaValidator, async (req, res) => {
   try {
     const { email, category } = req.body;
     const contact = await dataSource.getRepository(Contacts).findOne({
@@ -40,7 +41,7 @@ router.post("/contacts", async (req, res) => {
   }
 });
 
-router.post("/contact-us", async (req, res) => {
+router.post("/contact-us", contactUsSchemaValidator, async (req, res) => {
   try {
     const { name, email, webLink, message } = req.body;
     const contactRequest = await dataSource
