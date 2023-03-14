@@ -50,7 +50,7 @@ ingress:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
-    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:eu-west-1:311783371571:certificate/29a87e3a-9fc3-483e-85d8-ef9e8cad472b
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:eu-west-1:311783371571:certificate/0712ab8b-d53c-4deb-9e26-e2e84cd34088
     alb.ingress.kubernetes.io/load-balancer-attributes: idle_timeout.timeout_seconds=600
     alb.ingress.kubernetes.io/ssl-redirect: '443'
     # kubernetes.io/tls-acme: "true"
