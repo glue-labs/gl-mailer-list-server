@@ -7,7 +7,7 @@ steps:
       if [[ $BUILDKITE_BRANCH == "main" ]]
       then
         buildkite-agent meta-data set "DEPLOY" "true"
-        buildkite-agent meta-data set "DEPLOY_ENV" "qa"
+        buildkite-agent meta-data set "DEPLOY_ENV" "base"
       else
         buildkite-agent meta-data set "DEPLOY" "false"
         buildkite-agent meta-data set "DEPLOY_ENV" "null"
